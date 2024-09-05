@@ -30,16 +30,6 @@
                     <p><span class="irrigation-info-title">Irrigation:</span>{{ data.results.watering }}</p>
                 </div>
                 <hr>
-                <h2>Disease Information</h2>
-                
-                <h3 class="common-name">{{ data.results.disease_name }}</h3>
-                <h3 class="name">{{ data.results.disease_common_name }}</h3>
-                <p><span class="disease-cat">Disease Severity: {{ data.results.disease_category }}</span></p>
-                <div class="description">
-                    <p class="description-title">Disease Description: </p>
-                    <p>{{ data.results.disease_description }}</p>
-                </div>
-                <hr>
                 {% if data.results.plant_uses_type == 'set' %}
                     <h2>Plant Uses</h2>
                     <div class="uses">

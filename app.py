@@ -1,12 +1,10 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for, flash, session
 from datetime import timedelta
 from werkzeug.utils import secure_filename
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.models import load_model
 from models import db, User, Plant, Comment, email_exists, username_exists, username_count, get_user
 from models import password_count, email_count, get_plants, plants_saved_count, get_reviews
-from usable import watering_message, truncate_words, generate_category, get_plant_uses, get_google_uses, get_plant_description_wikipedia
-from usable import check_password, search_images_and_encode_first, preprocess_and_predict, search_by_name, search_plant_uses
+from usable import watering_message, truncate_words, generate_category, get_plant_uses, get_google_uses, get_plant_uses_family, get_plant_description_wikipedia
+from usable import check_password, search_images_and_encode_first
 import urllib.parse
 import base64
 import requests
@@ -21,10 +19,6 @@ app.permanent_session_lifetime = timedelta(days=10)
 app.secret_key = '1567tay'
 UPLOAD_FOLDER = 'static/files'
 
-model = load_model("plant_classifier.h5")
-with open('class_names.json', 'r') as f:
-    class_names = json.load(f)
-
 db.init_app(app)
 
 # Plant.id API endpoint
@@ -32,8 +26,8 @@ PLANT_ID_API_URL = "https://plant.id/api/v3/identification"
 url = "https://plant.id/api/v3/identification?details=common_names,url,description,taxonomy,rank,gbif_id,inaturalist_id,image,synonyms,edible_parts,watering&language=en"
 
 # Replace with your Plant.id API token
-PLANT_ID_API_KEY = "SMVUfdDn8bs2BPxl5m9JYXSnGFOVIaRzAY65DIm9NBTKNJfG7p"
-PLANT_ID_API_KEY_NEW = "G0SyXknxTXJD0R8DyS5rVWlL9A05s8VrGFaXSGGEmHznnOho1u"
+PLANT_ID_API_KEY_OLD = "SMVUfdDn8bs2BPxl5m9JYXSnGFOVIaRzAY65DIm9NBTKNJfG7p"
+PLANT_ID_API_KEY = "G0SyXknxTXJD0R8DyS5rVWlL9A05s8VrGFaXSGGEmHznnOho1u"
 
 @app.route('/', methods=['GET'])
 def welcome():
@@ -265,11 +259,9 @@ def search():
             }
             response = requests.get(search_url, headers=headers)
             if response.status_code == 200:
-                print('A')
                 data = response.json()
                 entities = data.get('entities', [])
                 if entities:
-                    print('B')
                     entity_result = []
                     for entity in entities:
                         if entity['matched_in_type'] == 'synonym':
@@ -279,9 +271,7 @@ def search():
                         image_url = f"data:image/jpeg;base64,{image_base64}"
                         plant_info_url = f"https://plant.id/api/v3/kb/plants/{access_token}?details=common_names,url,description,taxonomy,rank,gbif_id,inaturalist_id,image,synonyms,edible_parts,watering&language=en"
                         plant_info_response = requests.get(plant_info_url, headers=headers)
-                        print("C")
                         result = plant_info_response.json()
-                        print('D')
                         if result['watering']:
                             irrigation_info = watering_message(result['watering'])
                         if result['common_names']:
@@ -373,9 +363,7 @@ def search():
                                     image_url = f"data:image/jpeg;base64,{image_result}"
                                 else:
                                     image_url = plant['image_url']
-                                print(image_url)
                                 plant_uses = plant['plant_uses']
-                                print(plant_uses)
                                 if isinstance(plant_uses, set):
                                     plant_uses = plant_uses
                                     plant_uses_type = 'set'
@@ -530,31 +518,102 @@ def upload():
         try:
             # Read the image file and convert it to base64
             image_file = file.read()
-            # Convert image data to PIL Image
-            common_name, confidence = preprocess_and_predict(image_file, model, class_names)
-            confidence_threshold = 0.6
-            if confidence < confidence_threshold:
-                flash('Image does\'t contain an plant', 'warning')
+            image_data = base64.b64encode(image_file).decode('utf-8')
+            # Construct the base64 image string with appropriate data:image MIME type
+            base64_image_string = f"data:image/jpeg;base64,{image_data}"
+            payload = json.dumps({
+                "images": [
+                   base64_image_string
+                ],
+                "similar_images": True,
+                "health": "all"
+            })
+
+            headers = {
+                'Api-Key': PLANT_ID_API_KEY,
+                'Content-Type': 'application/json'
+            }
+            # This integrates the plant.id api
+            response = requests.request("POST", url, headers=headers, data=payload)
+            if response.status_code == 201:
+                # Turns the response into JSON
+                plant_info = response.json()
+                print(plant_info)
+                # This gets the result portion of the response
+                result = plant_info['result']
+                # This gets the is_plant portion of the response
+                is_plant = result['is_plant']
+                # Gets the probability of the image containing a plant
+                plant_probability = is_plant['probability']
+                # Checks if a plant is in the image
+                plant_binary = is_plant['binary']
+                if plant_binary:
+                    # This gets the common name of the plant
+                    common_names = result['classification']['suggestions'][0]['details']['common_names']
+                    if common_names:
+                        # This gets the scientific name of the plant
+                        botanical_name = result['classification']['suggestions'][0]['name']
+                        # This gets the family of the plant
+                        family = result['classification']['suggestions'][0]['details']['taxonomy']['family']
+                        plant_uses = None
+                        # Check uses for each common name
+                        for common_name in common_names:
+                            if common_name.lower() == family.lower():
+                                common_name = botanical_name
+                            plant_uses = get_plant_uses(common_name, botanical_name)
+                            if plant_uses is not None:
+                                break
+                        # If plant uses not found for any common name, try Google search
+                        if plant_uses is None:
+                            plant_uses = get_google_uses(common_names[0])
+                    else:
+                        if len(result['classification']['suggestions']) > 1:
+                            common_names = result['classification']['suggestions'][1]['details']['common_names']
+                            common_name = common_names[0]
+                            if common_names:
+                                # This gets the scientific name of the plant
+                                botanical_name = result['classification']['suggestions'][0]['name']
+                                # This gets the family of the plant
+                                family = result['classification']['suggestions'][0]['details']['taxonomy']['family']
+                                plant_uses = None
+                                # Check uses for each common name
+                                for common_name in common_names:
+                                    if common_name.lower() == family.lower():
+                                        common_name = botanical_name
+                                    plant_uses = get_plant_uses(common_name, botanical_name)
+                                    if plant_uses is not None:
+                                        break
+                                # If plant uses not found for any common name, try Google search
+                                if plant_uses is None:
+                                    plant_uses = get_google_uses(common_names[0])
+                        elif len(result['classification']['suggestions']) == 1 and result['classification']['suggestions'][0]['details']['common_names'] is None:
+                            family_name = result['classification']['suggestions'][0]['details']['taxonomy']['family']
+                            botanical_name = result['classification']['suggestions'][0]['name']
+                            plant_uses, common_name = get_plant_uses_family(family_name, botanical_name)
+                            result['classification']['suggestions'][0]['details']['common_names'] = [common_name]
+                        else:
+                            print("No common names found in the classification results.")
+                    # Saves the plant into the plants table
+                    new_plant = Plant(filename=file.filename, image_data=image_file, plant_info=plant_info, plant_uses=plant_uses, username=session['username'])
+                    db.session.add(new_plant)
+                    db.session.commit()
+                    print("Saved Successfully")
+                    # Redirect to the results page with the image URL and identification results
+                    flash('Image saved successfully', 'success')
+                    return redirect(url_for('results', image_id=new_plant.id))
+                # Image does not contain plant
+                flash('Image does not contain a plant', 'warning')
                 return redirect(url_for('scan'))
-            description = get_plant_description_wikipedia(common_name)
-            common_name_search = search_by_name(common_name, PLANT_ID_API_KEY)
-            if common_name_search:   
-                plant_info = common_name_search[0]
-            botanical_name = plant_info['plant_info']['name']
-            family = plant_info['plant_info']['taxonomy']['family']
-            plant_uses = search_plant_uses(common_name, botanical_name, family)
-            # Saves the plant into the plants table
-            new_plant = Plant(filename=file.filename, image_data=image_file, plant_info=plant_info, plant_uses=plant_uses, username=session['username'])
-            db.session.add(new_plant)
-            db.session.commit()
-            print("Saved Successfully")
-            # Redirect to the results page with the image URL and identification results
-            flash('Image saved successfully', 'success')
-            return redirect(url_for('results', image_id=new_plant.id))
+            elif response.status_code == 200:
+                data = response.json()
+                print(data)
+            # Invalid response returned
+            theme = session.get('theme', 'light')
+            return render_template('apierror.html', data={'error':jsonify({'error': 'Failed to identify plant'}), 'theme':theme})
         except Exception as e:
             theme = session.get('theme', 'light')
             return render_template('apierror.html', data={'error':jsonify({'error': str(e)}), 'theme':theme})
-    
+        
 @app.route('/results/<int:image_id>')
 def results(image_id):
     # Retrieve the image and identification results from the database
@@ -563,26 +622,72 @@ def results(image_id):
     if isinstance(image.plant_uses, set):
         plant_uses = image.plant_uses
         plant_uses_type = 'set'
-    elif isinstance(image.plant_uses, dict):
+    else:
         plant_uses = image.plant_uses
         plant_uses = {key: value for key, value in list(plant_uses.items())[::-1]}
         plant_uses_type = 'dict'
     # This gets the result of the identification
-    result = image.plant_info['plant_info']
+    result = image.plant_info['result']
     # Gets the classification portion of the response
-    common_name = result['common_name']
-    # Gets the name of the plant
-    plant_name = result['name']
-    taxonomy = result['taxonomy']
+    classification = result['classification']
+    if len(result['disease']['suggestions'])  == 0:
+        disease_category = ''
+        disease_common_name = 'None'
+        disease_description = 'None'
+        disease_name = 'None'
+    else: 
+        # Gets the disease suggestion
+        disease = result['disease']['suggestions'][0]
+        # Generates the category of severity
+        disease_category = generate_category(disease['probability'])
+        # Gets the details of the disease
+        disease_details = disease['details']
+        # Gets the disease description
+        disease_description = disease_details['description']
+        # Gets the plant disease common name 
+        disease_name = disease['name']
+        if disease_details['common_names'] is not None:
+            disease_common_name = disease_details['common_names'][0]
+        else:
+            disease_common_name = 'None'
+    # Gets the first suggestion in the response
+    suggestions = classification['suggestions'][0]
+    # Gets the probabilty of the plant in the images similiarity
+    plant_prob = suggestions['probability']
+    # Gets the similiar images in the response 
+    similar_images = suggestions['similar_images']
+    # Gets the details portion of the response
+    details = suggestions['details']
+    # Gets the common name of the plant
+    if details['common_names'] is not None:
+        common_name = details['common_names'][0]
+        # Gets the name of the plant
+        plant_name = suggestions['name']
+    elif len(result['classification']['suggestions']) == 1 and details['common_names'] is None: 
+        common_name = details['common_names']
+        plant_name = suggestions['name']
+    else:
+        common_name = result['classification']['suggestions'][1]['details']['common_names'][0]
+        plant_name = result['classification']['suggestions'][1]['name']
+    # Gets the taxonomy of the plant
+    taxonomy = details['taxonomy']
     list_taxonomy = list(taxonomy.items())[::-1]
     reversed_taxonomy = {key: value for key, value in list_taxonomy}
     # Gets the description of the plant
-    if result['description']:
-        description = result['description']['value']
+    if details['description']:
+        description = details['description']['value']
+    elif len(result['classification']['suggestions']) == 1 and result['classification']['suggestions'][0]['details']['description'] is None:
+        description = get_plant_description_wikipedia(common_name)
+        if description is None:
+            description = get_plant_description_wikipedia(plant_name)
+    else: 
+        description = result['classification']['suggestions'][1]['details']['description']['value']
+    # Gets the synonyms of the plants name
+    synonyms = details['synonyms']
     # Checks if  the plant is edibles
-    edible_parts = result['edible_parts']
+    edible_parts = details['edible_parts']
     # Checks the watering conditions
-    watering = result['watering']
+    watering = details['watering']
     irrigation_info = watering_message(watering)
     # Encodes the image in base64
     image_base64 = base64.b64encode(image.image_data).decode('utf-8')
@@ -594,6 +699,10 @@ def results(image_id):
         'description': description,
         'edible_part': edible_parts,
         'watering': irrigation_info,
+        'disease_category': disease_category,
+        'disease_description': disease_description,
+        'disease_common_name': disease_common_name.capitalize(),
+        'disease_name': disease_name.capitalize(),
         'plant_uses': plant_uses,
         'plant_uses_type': plant_uses_type
     }
@@ -618,42 +727,73 @@ def history():
                 plant_details = []
                 for plant in savedPlants:
                     # Ensure plant.plant_info is not None
-                    if plant.plant_info is not None:
+                    if plant.plant_info is not None and 'result' in plant.plant_info:
                         # This gets the result portion of the response
-                        result = plant.plant_info['plant_info']
+                        result = plant.plant_info['result']
                         # Ensure result is not None
                         if result is not None:
-                            common_name = result['common_name']
-                            # Gets the name of the plant
-                            plant_name = result['name']                                   
-                            # Gets the taxonomy of the plant
-                            taxonomy = result['taxonomy']
-                            list_taxonomy = list(taxonomy.items())[::-1]
-                            reversed_taxonomy = {key: value for key, value in list_taxonomy}
-                            # Gets the description of the plant
-                            if result['description']:
-                                description = result['description']['value']
-                            description = truncate_words(description, 60)
-                            # Checks if  the plant is edible
-                            edible_parts = result['edible_parts']
-                            # Checks the watering conditions
-                            watering = result['watering']
-                            irrigation_info = watering_message(watering)
-                            identification_results = {
-                                'name': plant_name,
-                                'common_name': common_name,
-                                'taxonomy': reversed_taxonomy,
-                                'description': description,
-                                'edible_part': edible_parts,
-                                'watering': irrigation_info,
-                                'plant_id': plant.id
-                            }
-                            image_base64 = base64.b64encode(plant.image_data).decode('utf-8')
-                            image_url = f"data:image/jpeg;base64,{image_base64}"
-                            plant_details.append({
-                                'image_url': image_url,
-                                'plant_data': identification_results
-                            })  
+                            # Gets the classification portion of the response
+                            classification = result['classification']
+                            # Ensure classification is not None
+                            if classification is not None:
+                                # Gets the first suggestion in the response
+                                suggestions = classification['suggestions']
+                                if suggestions and len(suggestions) > 0:
+                                    suggestion = suggestions[0]
+                                    # Now safely access suggestion values
+                                    # Gets the probabilty of the plant in the images similiarity
+                                    plant_prob = suggestion['probability']
+                                    # Gets the similiar images in the response 
+                                    similar_images = suggestion['similar_images']
+                                    # Gets the details portion of the response
+                                    details = suggestion['details']
+                                    # Gets the common name of the plant
+                                    if details['common_names'] is not None:
+                                        common_name = details['common_names'][0]
+                                        # Gets the name of the plant
+                                        plant_name = suggestion['name']
+                                    elif details['common_names'] is None and len(suggestions) == 1:
+                                        common_name = details['common_name']
+                                        plant_name = suggestion['name']
+                                    else:
+                                        common_name = classification['suggestions'][1]['details']['common_names'][0]
+                                        plant_name = classification['suggestions'][1]['name']                                    
+                                    # Gets the taxonomy of the plant
+                                    taxonomy = details['taxonomy']
+                                    list_taxonomy = list(taxonomy.items())[::-1]
+                                    reversed_taxonomy = {key: value for key, value in list_taxonomy}
+                                    # Gets the description of the plant
+                                    if details['description']:
+                                        description = details['description']['value']
+                                    elif len(result['classification']['suggestions']) == 1 and result['classification']['suggestions'][0]['details']['description'] is None:
+                                        description = get_plant_description_wikipedia(common_name)
+                                        if description is None:
+                                            description = get_plant_description_wikipedia(plant_name)
+                                    else: 
+                                        description = result['classification']['suggestions'][1]['details']['description']['value']
+                                    description = truncate_words(description, 60)
+                                    # Gets the synonyms of the plants name
+                                    synonyms = details['synonyms']
+                                    # Checks if  the plant is edible
+                                    edible_parts = details['edible_parts']
+                                    # Checks the watering conditions
+                                    watering = details['watering']
+                                    irrigation_info = watering_message(watering)
+                                    identification_results = {
+                                        'name': plant_name,
+                                        'common_name': common_name,
+                                        'taxonomy': reversed_taxonomy,
+                                        'description': description,
+                                        'edible_part': edible_parts,
+                                        'watering': irrigation_info,
+                                        'plant_id': plant.id
+                                    }
+                                    image_base64 = base64.b64encode(plant.image_data).decode('utf-8')
+                                    image_url = f"data:image/jpeg;base64,{image_base64}"
+                                    plant_details.append({
+                                        'image_url': image_url,
+                                        'plant_data': identification_results
+                                    })  
                 theme = session.get('theme', 'light')
                 return render_template('history.html', data={'plant_data': plant_details, 'active_page': 'history', 'theme': theme})                       
             # Not logged in

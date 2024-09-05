@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homeform.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="body">
+        <div class="wrapper" id="wrapper-1">
+            <form action="{{ url_for('edit') }}" method="post" id="form1">
+                <h2>Change Password</h2>
+                <div class="radio-group">
+                    <input type="checkbox" id="option1" name="choice" value="password" required>
+                    <label for="option1">Change Password</label>
+                </div> 
+                <div class="input-box">
+                    <label for="oldPassword">Old Password: </label>
+                    <br>
+                    <input type="password" name="oldPassword" id="password" 
+                    placeholder="Old Password" required>
+                   <!--
+                    <i class='bx bxs-lock-alt' ></i>
+                    -->
+                    <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                </div>
+                <div class="input-box">
+                    <label for="newPassword">New Password: </label>
+                    <br>
+                    <input type="password" name="newPassword" id="password" 
+                    placeholder="New Password">
+                    <!--
+                    <i class='bx bxs-lock-alt' ></i>
+                    -->
+                    <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                </div>
+                <div class="input-box">
+                    <label for="newPasswordConfirmation">Confirm New Password</label>
+                    <br>
+                    <input type="password" name="newPasswordConfirmation" id="password" 
+                    placeholder="confirm New Password">
+                    <!--
+                    <i class='bx bxs-lock-alt' ></i>
+                    -->
+                    <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                </div>
+                <button type="submit" class="btn">Update</button>
+            </form>
+        </div>
+        <hr>
+        <div class="wrapper" id="wrapper-2">
+            <form action="{{url_for('edit')}}" method="post" id="form2">
+                <h2>Change Email</h2>                      
+                <div class="radio-group">
+                    <input type="checkbox" id="option2" name="choice" value="email" required>
+                    <label for="option2">Change Email</label>
+                </div> 
+                <div class="input-box">
+                    <label for="newEmail">Old Email: </label>
+                    <br>
+                    <input type="email" name="oldEmail" id="" 
+                    placeholder="Old Email Address"> 
+                    <i class='bx bxs-envelope' ></i>
+                </div>
+                <div class="input-box">
+                    <label for="newEmail">New Email: </label>
+                    <br>
+                    <input type="email" name="newEmail" id="" 
+                    placeholder="New Email Address"> 
+                    <i class='bx bxs-envelope' ></i>
+                </div>
+                <div class="input-box">
+                    <label for="oldPassword">Password: </label>
+                    <br>
+                    <input type="password" name="oldPassword" id="password" 
+                    placeholder="Password" required>
+                    <!--
+                    <i class='bx bxs-lock-alt' ></i>
+                    -->
+                    <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                </div>
+                <button type="submit" class="btn">Update</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block additional_script %} 
+    <script src="{{ url_for('static', filename='scripts/disable.js') }}"></script>
+    <script src="{{ url_for('static', filename='scripts/viewpasswords.js') }}"></script>
+{% endblock %}

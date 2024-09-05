@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="body">
+        <div class="container light-style flex-grow-1 container-p-y">
+            <h4 class="font-weight-bold py-3 mb-4">
+            Profile Page
+            </h4>
+            <div class="card overflow-hidden">
+                <div class="row no-gutters row-bordered row-border-light">
+                    <div class="col-md-12">
+                        <div class="tab-content">
+                            <div class="tab-pane fade active show" id="account-general">
+                                <div class="card-body media align-items-center">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar1.png" alt class="d-block ui-w-80">
+                                </div>
+                                <hr class="border-light m-0">
+                                <div class="card-body">
+                                    <form>
+                                        <div class="form-group">
+                                            <label class="form-label">Username</label>
+                                            <input type="text" class="form-control mb-1" value="{{ data.user.username }}" readonly disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Name</label>
+                                            <input type="text" class="form-control" value="{{ data.user.name }}" readonly disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">E-mail</label>
+                                            <input type="text" class="form-control mb-1" value="{{ data.user.email }}" readonly disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="form-label">Number Of Uploads</label>
+                                            <input type="text" class="form-control" value="{{ data.user.upload }}"   readonly disabled>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        </div>
+    </div>
+{% endblock %}

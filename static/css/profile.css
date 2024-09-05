@@ -1,0 +1,106 @@
+* {
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body.dark-theme {
+    --text-color: hsl(var(--hue), 4%, 75%);
+    --container-color: hsl(var(--hue), 8%, 16%);
+    --card-span-color: hsl(var(--hue), 4%, 75%);
+    --read-more-color: hsl(var(--hue), 4%, 75%);
+    --input-bg: none;
+}
+
+body.light {
+    --text-color: hsl(var(--hue), 4%, 35%);
+    --container-color: #FFF;
+    --card-span-color: #666;
+    --read-more-color: #fff;
+    --input-bg: #fff;
+}
+
+:root {
+    --grey: #f2f2f2;
+    --hue: 152;
+}
+
+.body{
+    display: flex;
+    justify-content: center;
+}
+
+.ui-w-80 {
+    width: 80px !important;
+    height: auto;
+}
+
+.text-light {
+    color: #babbbc !important;
+}
+
+.card {
+    background-color: var(--container-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    border-radius: 30px;
+    color: var(--text-color);
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.form-group input:disabled {
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    border-color: #007bff;
+    border-radius: 10px;
+}
+
+.row-bordered {
+    overflow: hidden;
+    width: 100%;
+}
+
+@media screen and (max-width: 415px) {
+    body {
+        width: 100% !important;
+        padding: 0;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: 100%;
+        padding: 0 auto !important; /* Reduce padding to prevent overflow */
+        margin-left: 0px !important;
+    }
+
+    .card {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0 10px; /* Ensure the card has some margin */
+    }
+
+    .row.no-gutters {
+        margin: 0;
+        width: 100%;
+    }
+
+    .form-group {
+        width: 100%;
+    }
+
+    .form-control {
+        width: 100%;
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+}

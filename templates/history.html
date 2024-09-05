@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
+{% endblock %}
+
+{% block content %}
+    <h2 class="section__title-center">
+        History Of Identified Plants
+    </h2>
+
+    <p class="product__description">
+        Here are all of your previously identified plants with their various botanical data
+    </p>
+    <div class="card-container">
+        {% for plant in data.plant_data %}
+            <div class="card">
+                <img class="img-area" src="{{ plant.image_url }}" alt="">
+                <div class="card-content">
+                    <h3 class="common-name">{{ plant.plant_data.common_name }}</h3>
+                    <h3 class="name">{{ plant.plant_data.name }}</h3>
+                    <div class="taxonomy">
+                        <ul>
+                            {% for key, value in plant.plant_data.taxonomy.items() %}
+                                <li><span class="taxonomy-key">{{ key }}: </span>{{ value }}</li>
+                            {% endfor %}
+                        </ul>     
+                    </div>
+                    <div class="description">
+                        <p class="description-title">Description</p>
+                        <p>{{ plant.plant_data.description }}</p>
+                    </div>
+                    <div class="irrigation-info">
+                        <p><span class="irrigation-info-title">Irrigation:</span> {{ plant.plant_data.watering }}</p>
+                    </div>
+                    <a href="/results/{{ plant.plant_data.plant_id }}" class="btn">Read More</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}  

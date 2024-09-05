@@ -1,0 +1,62 @@
+{% extends "signbase.html" %}
+
+{% block content %}
+
+    <div class="wrapper">
+        <form action="{{url_for('forgot')}}" method="post">
+            <h1>Forgot Password</h1>
+            <p class="welcome-message">Please enter your details to change password</p>
+            
+            <div class="input-box">
+                <div class="input-label">
+                    <label for="username">Username</label>
+                </div>
+                <input type="text" name="username" id="" 
+                placeholder="Username" required autocomplete="off"> 
+                <!--
+                <i class='bx bxs-user'></i>
+                -->
+            </div>
+
+            <div class="input-box">
+                <div class="input-label">
+                    <label for="name">Full Name</label>
+                </div>
+                <input type="text" name="name" id="" 
+                placeholder="Full Name" required autocomplete="off"> 
+                <!--
+                <i class='bx bxs-user'></i>
+                -->
+            </div>
+
+            <div class="input-box">
+                <div class="input-label">
+                    <label for="email">Email</label>
+                </div>
+                <input type="email" name="email" id="" 
+                placeholder="Email" required autocomplete="off"> 
+                <!--
+                <i class='bx bxs-user'></i>
+                -->
+            </div>
+            
+            <div class="input-box">
+                <div class="input-label">
+                    <label for="password">New Password</label>
+                </div>
+                <input type="password" name="password" id="password" 
+                placeholder="New Password" required autocomplete="off">
+                <i class="fas fa-eye toggle-icon" id="togglePassword"></i>
+                <!--
+                <i class='bx bxs-lock-alt' ></i>
+                -->
+            </div>
+            <button type="submit" class="btn">Update</button>
+
+            <div class="register-link">
+                <p>Already have an account? <a href="{{url_for('signin')}}">Sign in</a></p>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}

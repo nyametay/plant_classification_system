@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/homeform.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="body">
+        <h2>Error Message</h2>
+        <pre>{{ data.error }}</pre>
+    </div>
+{% endblock %}

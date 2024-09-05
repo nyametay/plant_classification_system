@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!--=============== FAVICON ===============-->
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/img/favicon.png') }}" type="image/x-icon">
+
+        <!--=============== REMIX ICONS ===============-->
+        <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+
+        <!--=============== CSS ===============-->
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/welcomestyle.css') }}">
+
+        <title>Responsive plants website - Bedimcode</title>
+    </head>
+    <body class="{{ data.theme }}">
+        <!--==================== HEADER ====================-->
+        <header class="header" id="header">
+            <nav class="nav container">
+                <a href="#" class="nav__logo">
+                    <i class="ri-leaf-line nav__logo-icon"></i> IPRIS
+                </a>
+
+                <div class="nav__menu" id="nav-menu">
+                    <ul class="nav__list">
+                        <li class="nav__item">
+                            <a href="/signin" class="nav__link login">Signin</a>
+                        </li>
+                        <li class="nav__item">
+                            <a href="/signup" class="nav__link signup">Signup</a>
+                        </li>
+                    </ul>
+
+                    <div class="nav__close" id="nav-close">
+                        <i class="ri-close-line"></i>
+                    </div>
+                </div>
+                <div class="nav__btns">
+                    <div class="nav__toggle" id="nav-toggle">
+                        <i class="ri-menu-line"></i>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="container mt-4">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <main class="main">
+            <!--==================== HOME ====================-->
+            <section class="home" id="home">
+                <div class="home__container container grid">
+                    <img src="{{ url_for('static', filename='images/img/home.png') }}" alt="" class="home__img">
+
+                    <div class="home__data">
+                        <h1 class="home__title">
+                            IPRIS
+                        </h1>
+                        <p class="home__description">
+                            IPRS - Intelligent Plant Recognition and Information System.
+                            Discover the world of plants with ease using PlantIdentifier, 
+                            your go-to tool for identifying any plant you come across. 
+                            Whether you're a gardening enthusiast, a botanist, or 
+                            simply curious about the plants in your surroundings, our 
+                            advanced API-powered system makes plant identification quick and simple.
+                        </p>
+                        <a href="/signup" class="button button--flex">
+                            Explore
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <section class="about section container" id="about">
+                <div class="about__container grid">
+                    <img src="{{ url_for('static', filename='images/img/about.png') }}" alt="" class="about__img">
+
+                    <div class="about__data">
+                        <h2 class="section__title about__title">
+                            Why Use IPRIS?
+                        </h2>
+                        <div class="about__details">
+                            <p class="about__details-description">
+                                We used an API that has thousands of unbiased reviews and is trusted by many.
+                            </p>
+                            <p class="about__details-description">
+                                High Accuracy: Leveraging the latest in AI technology, our system ensures precise identification.
+                            </p>
+                            <p class="about__details-description">
+                                Extensive Plant Database: Access information on a wide variety of plants.
+                            </p>
+                            <p class="about__details-description">
+                                Simple and Intuitive: Designed to be easy for anyone to use.
+                            </p>
+                            <p class="about__details-description">
+                                In-Depth Information: Learn about the plant's characteristics, ideal growing conditions, and care tips.
+                            </p>
+                        </div>
+
+                        <a href="https://web.plant.id/plant-identification-api/" class="button--link button--flex" target="_blank">
+                            More Info About API
+                        </a>
+                    </div>
+                </div>
+            </section>
+            <section class="about section container" id="about">
+                <div class="about__container grid">
+                    <img src="{{ url_for('static', filename='images/img/how.png') }}" alt="" class="about__img">
+
+                    <div class="about__data">
+                        <h2 class="section__title about__title">
+                            How To Use IPRIS
+                        </h2>
+                        <div class="about__details">
+                            <p class="about__details-description">
+                                Snap Or Choose a Photo: Take a clear picture of the plant you want to identify.
+                            </p>
+                            <p class="about__details-description">
+                                Upload Your Photo: Click the button below to upload your image.
+                            </p>
+                            <p class="about__details-description">
+                                Get Instant Results: Our advanced AI will analyze the photo and provide detailed information about the plant within seconds.
+                            </p>
+                        </div>
+
+                        <a href="/signup" class="button--link button--flex">
+                            Try
+                        </a>
+                        <hr>
+                        <br>
+                        <a href="{{ url_for('review') }}" target="_blank" class="feedback">View what users think of us</a>
+                    </div>
+                </div>
+            </section>
+        </main>
+        <!--=============== MAIN JS ===============-->
+        <script src="{{ url_for('static', filename='scripts/main.js') }}"></script>
+    </body>
+</html>

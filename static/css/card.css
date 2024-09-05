@@ -1,0 +1,149 @@
+*{
+    font-family: sans-serif;
+}
+
+body.dark-theme{
+    --text-color: hsl(var(--hue), 4%, 75%);
+    --container-color: hsl(var(--hue), 8%, 16%);
+    --card-span-color: hsl(var(--hue), 4%, 75%);
+    --read-more-color: hsl(var(--hue), 4%, 75%);
+}
+  
+  /*========== Variables Light theme ==========*/
+body.light{
+    --text-color: hsl(var(--hue), 4%, 35%);
+    --container-color: #FFF;
+    --card-span-color: #666;
+    --read-more-color: #fff;
+}
+
+:root{
+    --grey: #f2f2f2;
+}
+
+.card-container{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.card{
+    max-width: 400px;
+    background-color: var(--container-color);
+    border-radius: 30px;
+    padding: 30px;
+    overflow: hidden;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+    margin: 20px;
+}
+
+.card img{
+    width: 100%;
+}
+
+.img-area {
+	position: relative;
+	width: 100%;
+	height: 300px;
+	background: var(--grey);
+	margin-bottom: 30px;
+	border-radius: 15px;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+}
+
+.img-area img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center;
+	z-index: 100;
+}
+
+.card-content h3{
+    font-size: 28px;
+    margin-bottom: 8px;
+}
+
+.card-content p{
+    color: var(--text-color);
+    font-size: 15px;
+    line-height: 1.3;    
+}
+
+.card-content .btn{
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #333;
+    text-decoration: none;
+    border-radius: 4px;
+    margin-top: 16px;
+    color: var(--read-more-color);
+}
+
+.common-name{
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.name{
+    font-weight: 300;
+    font-style: italic;
+    text-transform: capitalize;
+}
+
+ul{
+    list-style: none;
+    margin-bottom: 10px;
+    padding-left: 0px;
+}
+
+.taxonomy ul{
+    display: grid;
+    grid-template-columns: auto auto;
+}
+
+.taxonomy span,
+.taxonomy li{
+    color: var(--card-span-color);
+}
+
+.description{
+    margin-bottom: 10px;
+}
+
+.irrigation-info{
+    margin-bottom: 10px;
+}
+
+.description-title{
+    margin-bottom: 5px;
+}
+
+.taxonomy-key,
+.description-title,
+.irrigation-info-title,
+.edible-parts-title{
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.uses-parts{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.uses-parts span{
+    margin: 0px 10px;
+}
+
+.uses-parts span:first-child{
+    margin-left: 0px;
+}

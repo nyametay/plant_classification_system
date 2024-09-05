@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/card.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="card-container">
+        <div class="card">
+            <img class="img-area" src="{{ data.image_url }}">
+            <div class="card-content">
+                <h3 class="common-name">{{ data.results.common_name }}</h3>
+                <h3 class="name">{{ data.results.name }}</h3>
+                <div class="taxonomy">
+                    <ul>
+                        {% for key, value in data.results.taxonomy.items() %}
+                            <li><span class="taxonomy-key">{{ key }}: </span>{{ value }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="description">
+                    <p class="description-title">Description: </p>
+                    {% if data.results.description is not none %}
+                        <p>{{ data.results.description }}</p>
+                    {% else %}
+                        <p>No plant description was found!!!</p>
+                    {% endif %}
+                </div>
+                <div class="irrigation-info">
+                    <p><span class="irrigation-info-title">Irrigation:</span>{{ data.results.watering }}</p>
+                </div>
+                <hr>
+                {% if data.results.plant_uses_type == 'set' %}
+                    <h2>Plant Uses</h2>
+                    <div class="uses">
+                        <ul>
+                            {% for use in data.results.plant_uses %}
+                                <li> <p>{{ use }}</p> </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    {% if data.results.plant_uses.None %}
+                        <h3>Plant uses could not be found check this google link for more Information</h3>
+                        <a href="{{ data.results.plant_uses['None'] }}" target="_blank">Link To Google</a>
+                    {% elif data.results.plant_uses.snippet %}
+                        <h2>Plant Uses Data</h2>
+                        <div class="uses">
+                            <p>{{ data.results.plant_uses.snippet }}</p>
+                            <a href="{{ data.results.plant_uses.link }}" target="_blank">Find More Information Here</a>
+                        </div>
+                    {% else %}
+                        {% for key, value in data.results.plant_uses.items() %}
+                            {% if value|length != 0 %}
+                                {% if key == 'Edible Parts' %}
+                                    <h2>{{ key }}</h2>
+                                    <div class="uses-parts">
+                                        {% for use in value %}
+                                            <span> <p>{{ use }} |</p> </span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <h2>{{ key }}</h2>
+                                    <div class="uses">
+                                        <ul>
+                                            {% for use in value %}
+                                                <li> <p>{{ use }}</p> </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

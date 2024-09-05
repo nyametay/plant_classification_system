@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/homeform.css') }}">
+{% endblock %}
+
+{% block content %}
+
+    <div class="body">
+        <div class="wrapper">
+            <form action="{{url_for('search')}}" method="post" enctype="multipart/form-data">
+                <div class="input-box">
+                    <div class="input-label">
+                        <label for="plant_name">Please Enter The Plant's Name</label>
+                    </div>
+                    <input type="text" name="plant_name" id="plant_name" 
+                    placeholder="Plant Name" required>
+                </div>
+                <button class="btn" type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

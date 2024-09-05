@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="about section container" id="about">
+        <div class="about__container grid">
+            <img src="{{ url_for('static', filename='images/img/about.png') }}" alt="" class="about__img">
+
+            <div class="about__data">
+                <h2 class="section__title about__title">
+                    Who we really are & <br> why choose us
+                </h2>
+
+                <p class="about__description">
+                    Join Thousands: Trusted Plant Identification Solutions for Every Botanical Need!
+                </p>
+
+                <div class="about__details">
+                    <p class="about__details-description">
+                        <i class="ri-checkbox-fill about__details-icon"></i>
+                        We used the Best plant identification API on the market to create this system.
+                    </p>
+                    <p class="about__details-description">
+                        <i class="ri-checkbox-fill about__details-icon"></i>
+                        We give you an identification accuracy of 90% with the maximum identification
+                        time being 2 seconds
+                    </p>
+                    <p class="about__details-description">
+                        <i class="ri-checkbox-fill about__details-icon"></i>
+                        We give you guides to protect and care for your plants.
+                    </p>
+                    <p class="about__details-description">
+                        <i class="ri-checkbox-fill about__details-icon"></i>
+                        100% Free Services.
+                    </p>
+                </div>
+
+                <a href="/scan" class="button--link button--flex">
+                    Identify Plant Now<i class="ri-arrow-right-down-line button__icon"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

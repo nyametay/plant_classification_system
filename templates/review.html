@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Page</title>
+    <!-- Stylesheet ------->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/review.css') }}">
+    <!-- Using Font Awesome ----->
+    <script src="https://kit.fontawesome.com/72af060ed4.js" crossorigin="anonymous"></script>
+</head>
+<body class="{{ data.theme }}">
+    <section id="testimonials">
+
+        <!--Testimonial Heading -------->
+        <div class="testimonial-heading">
+            <span>Comments</span>
+            <h1>Users Says</h1>
+        </div>
+        <!-- Testimonial box container -------->
+        <div class="testimonial-box-container">
+            <!-- For loop to loop through submitted reviews--->
+            {% for review in data.reviews %}
+                <!-- Box 1 ------>
+                <div class="testimonial-box">
+                    <!-- Top ------------>
+                    <div class="box-top">
+                        <!-- Profile ------>
+                        <div class="profile">
+                           <!-- Image --->
+                            <div class="profile-img">   
+                                <img src="{{ url_for('static', filename='images/img/profile.png') }}" alt="profile image">
+                            </div>
+                            <!-- Name and Username ----->
+                            <div class="name-user">
+                                <strong>{{ review.name }}</strong>
+                                <span>@{{ review.username }}</span>
+                            </div>
+                        </div>
+                        <!-- Reviews ------->
+                        <div class="reviews">
+                            {% for _ in range(review.rate) %}
+                                <i class="fas fa-star"></i>
+                            {% endfor %}
+                            {% for _ in range(5 - review.rate) %}
+                                <i class="far fa-star"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <!-- Comment ------>
+                    <div class="client-comment">
+                        <p>{{ review.comment }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+</body>
+</html>

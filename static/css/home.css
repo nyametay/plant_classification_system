@@ -1,0 +1,117 @@
+body.dark-theme{
+    --first-color-dark: hsl(var(--hue), 8%, 20%);
+    --title-color: hsl(var(--hue), 4%, 95%);
+    --text-color: hsl(var(--hue), 4%, 75%);
+    --body-color: hsl(var(--hue), 8%, 12%);
+    --container-color: hsl(var(--hue), 8%, 16%);
+    --disabled-input: hsl(var(--hue), 8%, 16%);
+    --select-input: hsl(var(--hue), 8%, 16%);
+}
+  
+  /*========== Variables Light theme ==========*/
+body.light{
+    --first-color: hsl(var(--hue), 24%, 32%);
+    --title-color: hsl(var(--hue), 4%, 15%);
+    --text-color: hsl(var(--hue), 4%, 35%);
+    --body-color: hsl(var(--hue), 0%, 100%);
+    --container-color: #FFF;
+    --disabled-input: rgba(239, 239, 239, 0.3);
+    --select-input: #fff; 
+}
+
+:root{
+    --first-color-alt: hsl(var(--hue), 24%, 28%);
+}
+
+.popup .overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 1;
+    display: none;
+}
+
+.popup .content {
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background-color: var(--body-color);
+    width: 450px;
+    height: 220px;
+    z-index: 2;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.popup .close-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    width: 30px;
+    height: 30px;
+    background: #222;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 600;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.popup.active .overlay {
+    display: block;
+}
+
+.popup.active .content {
+    transition: all 300ms ease ease-in-out;
+    transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-button {
+    background-color: #222;
+    color: #fff;
+    width: 120px !important;
+    padding: 10px !important;
+    margin: 10px !important;
+    border-radius: 20px !important;
+}
+
+.modal-button:hover {
+    background-color: #222;
+    color: #fff;
+}
+
+
+#notice {
+    margin-bottom: 5px;
+}
+
+#imageButton {
+    width: auto;
+    margin-right: 10px;
+}
+  
+#textButton {
+    background: var(--first-color);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+}
+  
+#textButton:hover {
+    background: var(--first-color-alt);
+}
+
+#imageButton:hover {
+    background: var(--first-color-alt);
+    color: var(--select-input);
+}
+

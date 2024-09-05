@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block additional_styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+{% endblock %}
+
+{% block content %}
+     <!--==================== HOME ====================-->
+    <section class="home" id="home">
+        <div class="home__container container grid">
+            <img src="{{ url_for('static', filename='images/img/home.png') }}" alt="" class="home__img">
+
+            <div class="home__data">
+                <h1 class="home__title">
+                    Enhance Your <br> Green Journey
+                </h1>
+                <p class="home__description">
+                    Our Plant Identification System Simplifies Your Botanical Journey!.
+                </p>
+                <a href="#" class="button button--flex" id="choose_path">
+                    Identify Plant <i class="ri-arrow-right-down-line button__icon"></i>
+                </a>
+                <div id="modal" class="popup">
+                    <div class="overlay"></div>
+                    <div class="content">
+                        <h2>Form of Identification</h2>
+                        <p id="notice">User can search for plant by name or their image</p>
+                        <button class="modal-button text-button" id="textButton">
+                            Use text
+                        </button>
+                        <button class="modal-button image-button" id="imageButton">
+                            Use image
+                        </button>
+                        <span class="close-btn" id="closeModal">&times;</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="home__social">
+                <span class="home__social-follow">Follow Us</span>
+
+                <div class="home__social-links">
+                    <a href="https://www.facebook.com/" target="_blank" class="home__social-link">
+                        <i class="ri-facebook-fill"></i>
+                    </a>
+                    <a href="https://www.instagram.com/" target="_blank" class="home__social-link">
+                        <i class="ri-instagram-line"></i>
+                    </a>
+                    <a href="https://twitter.com/" target="_blank" class="home__social-link">
+                        <i class="ri-twitter-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block additional_script %} 
+    <script src="{{ url_for('static', filename='scripts/option.js') }}"></script>
+{% endblock %}
